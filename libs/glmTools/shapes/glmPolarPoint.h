@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "glm/glm.hpp"
+#include "glm.hpp"
 
 class glmPolarPoint {
 public:
