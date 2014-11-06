@@ -8,6 +8,8 @@
 
 #include "glmFastPolyline.h"
 
+#include "glmGeom.h"
+
 glmFastPolyline::glmFastPolyline(){
 };
 

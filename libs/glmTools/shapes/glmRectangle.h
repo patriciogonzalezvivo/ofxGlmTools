@@ -10,8 +10,6 @@
 #include <vector>
 
 #include "glm.hpp"
-#include "glmGeom.h"
-
 
 class glmRectangle {
 public:

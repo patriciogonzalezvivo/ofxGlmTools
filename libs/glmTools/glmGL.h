@@ -9,8 +9,6 @@
 
 #include <OpenGL/gl.h>
 
-#include "glmGeom.h"
-
 #include "glmRectangle.h"
 #include "glmPolyline.h"
 

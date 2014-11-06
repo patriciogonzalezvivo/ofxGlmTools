@@ -12,11 +12,12 @@ void drawArrow(const glm::vec3 &_pos, const float &_angle, const float &_width )
         glm::ivec3(_pos.x,_pos.y,_pos.z),
         glm::ivec3(_pos.x,_pos.y,_pos.z),
         glm::ivec3(_pos.x,_pos.y,_pos.z)};
-    linePoints[0].x += (int)_width*cos(_angle+QUARTER_PI*3.);
-    linePoints[0].y += (int)_width*sin(_angle+QUARTER_PI*3.);
     
-    linePoints[3].x += (int)_width*cos(_angle-QUARTER_PI*3.);
-    linePoints[3].y += (int)_width*sin(_angle-QUARTER_PI*3.);
+    linePoints[0].x += (int)_width*cos(_angle+M_PI_4*3.);
+    linePoints[0].y += (int)_width*sin(_angle+M_PI_4*3.);
+    
+    linePoints[3].x += (int)_width*cos(_angle-M_PI_4*3.);
+    linePoints[3].y += (int)_width*sin(_angle-M_PI_4*3.);
     
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_INT, sizeof(glm::ivec3), &linePoints[0].x);

@@ -8,7 +8,7 @@
 #include "glmPolyline.h"
 
 #include "glmPolarPoint.h"
-
+#include "glmGeom.h"
 
 glmPolyline::glmPolyline():m_centroid(0.0,0.0,0.0),m_bChange(true){
     m_points.clear();

@@ -8,7 +8,6 @@
 #pragma once
 
 #include "glmRectangle.h"
-#include "glmGeom.h"
 
 class glmPolyline {
 public:
