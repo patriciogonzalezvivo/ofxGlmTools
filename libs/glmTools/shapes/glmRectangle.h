@@ -7,7 +7,11 @@
 
 #pragma once
 
-#include "glmTools.h"
+#include <vector>
+
+#include "glm.hpp"
+#include "glmGeom.h"
+
 
 class glmRectangle {
 public:
@@ -55,9 +59,6 @@ public:
     glm::vec3   getTopRight() const;
     glm::vec3   getBottomLeft() const;
     glm::vec3   getBottomRight() const;
-    
-    void    drawBorders();
-    void    drawCorners(const float &_width = 4.);
     
     float   x,y,width,height;
 };

@@ -149,9 +149,3 @@ void glmFastPolyline::simplify(float _tol){
     glmPolyline::simplify(_tol);
     updateCache();
 }
-
-void glmFastPolyline::drawNormals(){
-    for (int i = 0; i < size()-1; i++) {
-        drawLine(m_points[i], m_points[i] + glmPolarPoint(m_polars[i].a-HALF_PI,m_polars[i].r).getXY());
-    }
-}

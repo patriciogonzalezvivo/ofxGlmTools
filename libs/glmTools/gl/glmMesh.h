@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include "glmTools.h"
+#include "glmGL.h"
+#include "glmGeom.h"
 #include "glmPolyline.h"
 
 class glmMesh {
