@@ -66,7 +66,6 @@ public:
     
     void    save(std::string _path, bool useBinary = false) const;
     void    clear();
-    void    draw();
     
 private:
     std::vector<glm::vec4>  m_colors;
