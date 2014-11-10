@@ -64,15 +64,9 @@ void wrapRad(double &_angle);
 float mapValue(const float &value, const float &inputMin, const float &inputMax, const float &outputMin, const float &outputMax, bool clamp = true);
 float lerpValue(const float &_start, const float &_stop, float const &_amt);
 
-glm::vec3 getCentroid(std::vector<glm::vec3> &_pts);
-std::vector<glm::vec3> getConvexHull(std::vector<glm::vec3> &_pts);
+glm::vec3 getCentroid(const std::vector<glm::vec3> &_pts);
+std::vector<glm::vec3> getConvexHull( std::vector<glm::vec3> &_pts);
 
 bool lineSegmentIntersection(const glm::vec3 &_line1Start, const glm::vec3 &_line1End,
                              const glm::vec3 &_line2Start, const glm::vec3 &_line2End,
                              glm::vec3 &_intersection );
-
-//  C++ implementation of Kabsch Algorithm ( http://en.wikipedia.org/wiki/Kabsch_algorithm )
-//  from http://boscoh.com/code/rmsd.c
-//  More resources http://nghiaho.com/?page_id=671
-void calculate_rotation_rmsd(std::vector<glm::vec3> _ref_xlist, std::vector<glm::vec3> _mov_xlist, glm::vec3 &mov_com, glm::vec3 &mov_to_ref, glm::mat3 &U, double* rmsd);
-void fast_rmsd(std::vector<glm::vec3> _ref_xlist, std::vector<glm::vec3> _mov_xlist, double* rmsd);

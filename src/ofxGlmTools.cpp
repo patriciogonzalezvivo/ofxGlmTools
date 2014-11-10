@@ -8,7 +8,29 @@
 
 #include "ofxGlmTools.h"
 
-#include "ofxGlm.h"
+ofRectangle toOf(const glmRectangle &_rect){
+    return ofRectangle(_rect.x,_rect.y,_rect.width,_rect.height);
+}
+
+glmRectangle toGlm(const ofRectangle &_rect){
+    return glmRectangle(_rect.x,_rect.y,_rect.width,_rect.height);
+}
+
+ofPolyline toOf(const glmPolyline &_poly){
+    ofPolyline poly;
+    for (int i = 0; i < _poly.size(); i++) {
+        poly.addVertex(toOf(_poly[i]));
+    }
+    return poly;
+}
+
+glmPolyline toGlm(const ofPolyline &_poly){
+    glmPolyline poly;
+    for (int i = 0; i < _poly.size(); i++) {
+        poly.add(toGlm(_poly[i]));
+    }
+    return poly;
+}
 
 ofMesh toOf(const glmMesh &_mesh){
     ofMesh mesh;

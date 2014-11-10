@@ -39,7 +39,7 @@ float lerpValue(const float &_start, const float &_stop, float const &_amt) {
     }
 }
 
-glm::vec3 getCentroid(std::vector<glm::vec3> &_pts){
+glm::vec3 getCentroid(const std::vector<glm::vec3> &_pts){
     glm::vec3 centroid;
     for (int i = 0; i < _pts.size(); i++) {
         centroid += _pts[i] / (float)_pts.size();
@@ -59,26 +59,30 @@ bool isRightTurn(const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) {
     return ((b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x)) >= 0;
 }
 
-std::vector<glm::vec3> getConvexHull(std::vector<glm::vec3> &_pts){
+glm::vec3 h1,h2,h3;
+
+std::vector<glm::vec3> getConvexHull(std::vector<glm::vec3> &pts){
     std::vector<glm::vec3> hull;
-    glm::vec3 h1,h2,h3;
     
-    if (_pts.size() < 3) {
+//    std::vector<glm::vec3> pts;
+//    pts.assign(_pts.begin(),_pts.end());
+    
+    if (pts.size() < 3) {
         std::cout << "Error: you need at least three points to calculate the convex hull" << std::endl;
         return hull;
     }
     
-    std::sort(_pts.begin(), _pts.end(), &lexicalComparison);
+    std::sort(pts.begin(), pts.end(), &lexicalComparison);
     
-    hull.push_back(_pts.at(0));
-    hull.push_back(_pts.at(1));
+    hull.push_back(pts.at(0));
+    hull.push_back(pts.at(1));
     
     int currentPoint = 2;
     int direction = 1;
     
     for (int i=0; i<1000; i++) { //max 1000 tries
         
-        hull.push_back(_pts.at(currentPoint));
+        hull.push_back(pts.at(currentPoint));
         
         // look at the turn direction in the last three points
         h1 = hull.at(hull.size()-3);
@@ -102,7 +106,7 @@ std::vector<glm::vec3> getConvexHull(std::vector<glm::vec3> &_pts){
         // going through left-to-right calculates the top hull
         // when we get to the end, we reverse direction
         // and go back again right-to-left to calculate the bottom hull
-        if (currentPoint == _pts.size() -1 || currentPoint == 0) {
+        if (currentPoint == pts.size() -1 || currentPoint == 0) {
             direction = direction * -1;
         }
         
@@ -146,6 +150,11 @@ bool lineSegmentIntersection(const glm::vec3 &_line1Start, const glm::vec3 &_lin
 };
 
 //-------------------------------------------------------------------------------------
+
+//  C++ implementation of Kabsch Algorithm ( http://en.wikipedia.org/wiki/Kabsch_algorithm )
+//  from http://boscoh.com/code/rmsd.c
+//  More resources http://nghiaho.com/?page_id=671
+//
 
 /*
  * setup_rotation()

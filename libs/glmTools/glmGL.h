@@ -27,7 +27,7 @@ void drawPolyline(const glmPolyline &_poly){drawPolyline(_poly.getVertices());}
 void drawMesh(const glmMesh &_mesh);
 
 inline void draw(const glm::vec3 &_a){drawCross(_a);}
-inline void draw(const glm::vec3 &_a, const float &_width){drawCross(_a,_width);}
+inline void draw(const glm::vec3 &_a, float _width){drawCross(_a,_width);}
 inline void draw(const glm::vec3 &_a, const glm::vec3 &_b,const unsigned short &_pattern){drawStippleLine(_a, _b, _pattern);}
 inline void draw(const glm::vec3 &_a, const glm::vec3 &_b){drawLine(_a, _b);}
 inline void draw(const glmRectangle &_rect,const float &_width){drawCorners(_rect,_width);}
