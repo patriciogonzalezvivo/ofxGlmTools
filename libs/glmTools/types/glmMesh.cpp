@@ -12,7 +12,7 @@
 
 #include "tesselator.h"
 
-glmMesh::glmMesh():m_drawMode(GL_TRIANGLES){
+glmMesh::glmMesh():m_drawMode(TRIANGLES){
     
 }
 
@@ -20,15 +20,15 @@ glmMesh::glmMesh(const glmMesh &_mother):m_drawMode(_mother.getDrawMode()){
     add(_mother);
 }
 
-glmMesh::glmMesh(const glmPolyline &_poly):m_drawMode(GL_TRIANGLES){
+glmMesh::glmMesh(const glmPolyline &_poly):m_drawMode(TRIANGLES){
     add(_poly);
 }
 
-glmMesh::glmMesh(const std::vector<glmPolyline> &_polylines):m_drawMode(GL_TRIANGLES){
+glmMesh::glmMesh(const std::vector<glmPolyline> &_polylines):m_drawMode(TRIANGLES){
     add(_polylines);
 }
 
-glmMesh::glmMesh(const glmPolyline &_line, float _lineWidth):m_drawMode(GL_TRIANGLES){
+glmMesh::glmMesh(const glmPolyline &_line, float _lineWidth):m_drawMode(TRIANGLES){
     add(_line,_lineWidth);
 }
 
@@ -36,7 +36,7 @@ glmMesh::~glmMesh(){
     
 }
 
-void glmMesh::setDrawMode(GLenum _drawMode){
+void glmMesh::setDrawMode(DrawMode _drawMode){
     m_drawMode = _drawMode;
 }
 
@@ -131,7 +131,7 @@ void glmMesh::add(const glmPolyline &_polyline){
         tessAddContour(m_tess, 3, &_polyline.getVertices()[0].x, sizeof(glm::vec3), _polyline.size());
     }
     
-    if(m_drawMode == GL_TRIANGLES){
+    if(m_drawMode == TRIANGLES){
         // Tessellate polygon into triangles
         tessTesselate(m_tess, TESS_WINDING_NONZERO, TESS_POLYGONS, 3, 3, NULL);
         
@@ -157,19 +157,19 @@ void glmMesh::add(const glmPolyline &_polyline){
             addVertex(glm::vec3(vertices[3*i], vertices[3*i + 1], vertices[3*i + 2]));
         }
         
-    } else if(m_drawMode == GL_TRIANGLE_STRIP){
+    } else if(m_drawMode == TRIANGLE_STRIP){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
-    } else if(m_drawMode == GL_LINES){
+    } else if(m_drawMode == LINES){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
-    }  else if(m_drawMode == GL_LINE_STRIP){
+    }  else if(m_drawMode == LINE_STRIP){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
-    } else if(m_drawMode == GL_POINTS){
+    } else if(m_drawMode == POINTS){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
@@ -199,7 +199,7 @@ void glmMesh::add(const std::vector<glmPolyline> &_polylines){
         tessAddContour(m_tess, 3, &_polylines[i].getVertices()[0].x, sizeof(glm::vec3), _polylines[i].size());
     }
     
-    if(m_drawMode == GL_TRIANGLES){
+    if(m_drawMode == TRIANGLES){
         // Tessellate polygon into triangles
         tessTesselate(m_tess, TESS_WINDING_NONZERO, TESS_POLYGONS, 3, 3, NULL);
         
@@ -223,19 +223,19 @@ void glmMesh::add(const std::vector<glmPolyline> &_polylines){
             addNormal(UP_NORMAL);
             addVertex(glm::vec3(vertices[3*i], vertices[3*i + 1], vertices[3*i + 2]));
         }
-    } else if(m_drawMode == GL_TRIANGLE_STRIP){
+    } else if(m_drawMode == TRIANGLE_STRIP){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
-    } else if(m_drawMode == GL_LINES){
+    } else if(m_drawMode == LINES){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
-    }  else if(m_drawMode == GL_LINE_STRIP){
+    }  else if(m_drawMode == LINE_STRIP){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
-    } else if(m_drawMode == GL_POINTS){
+    } else if(m_drawMode == POINTS){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
@@ -316,7 +316,7 @@ void glmMesh::add(const glmPolyline &_polyline, float _lineWidth){
     addNormal(UP_NORMAL);
     addTexCoord(glm::vec2(0.0,1.0));
     
-    if (m_drawMode == GL_TRIANGLES){
+    if (m_drawMode == TRIANGLES){
         for (int i = 0; i < _polyline.size() - 1; i++) {
             addIndex(indexOffset + 2*i+3);
             addIndex(indexOffset + 2*i+2);
@@ -326,19 +326,19 @@ void glmMesh::add(const glmPolyline &_polyline, float _lineWidth){
             addIndex(indexOffset + 2*i+1);
             addIndex(indexOffset + 2*i+3);
         }
-    } else if(m_drawMode == GL_TRIANGLE_STRIP){
+    } else if(m_drawMode == TRIANGLE_STRIP){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
-    } else if(m_drawMode == GL_LINES){
+    } else if(m_drawMode == LINES){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
-    }  else if(m_drawMode == GL_LINE_STRIP){
+    }  else if(m_drawMode == LINE_STRIP){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
-    } else if(m_drawMode == GL_POINTS){
+    } else if(m_drawMode == POINTS){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
@@ -349,7 +349,7 @@ void glmMesh::add(const glmPolyline &_polyline, float _lineWidth){
     }
 }
 
-GLenum glmMesh::getDrawMode() const{
+DrawMode glmMesh::getDrawMode() const{
     return m_drawMode;
 }
 
@@ -387,41 +387,6 @@ void glmMesh::clear(){
 		m_indices.clear();
 	}
 
-}
-
-void glmMesh::draw(){
-    if(m_vertices.size()){
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(3, GL_FLOAT, sizeof(glm::vec3), &m_vertices[0].x);
-	}
-	if(m_normals.size()){
-		glEnableClientState(GL_NORMAL_ARRAY);
-		glNormalPointer(GL_FLOAT, sizeof(glm::vec3), &m_normals[0].x);
-	}
-	if(m_colors.size()){
-		glEnableClientState(GL_COLOR_ARRAY);
-		glColorPointer(4,GL_FLOAT, sizeof(glm::vec4), &m_colors[0].x);
-	}
-    if(m_texCoords.size()){
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, sizeof(glm::vec2), &m_texCoords[0].x);
-	}
-
-    if(m_indices.size()){
-        glDrawElements(m_drawMode, m_indices.size(),GL_UNSIGNED_SHORT,&m_indices[0]);
-    }else{
-        glDrawArrays(m_drawMode, 0, m_vertices.size());
-    }
-    
-    if(m_texCoords.size()){
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	}
-	if(m_colors.size()){
-		glDisableClientState(GL_COLOR_ARRAY);
-	}
-	if(m_normals.size()){
-		glDisableClientState(GL_NORMAL_ARRAY);
-	}
 }
 
 void glmMesh::save(std::string _path, bool _useBinary ) const{
@@ -462,7 +427,7 @@ void glmMesh::save(std::string _path, bool _useBinary ) const{
 	if(m_indices.size()){
 		os << "element face " << m_indices.size() / faceSize << std::endl;
 		os << "property list uchar int vertex_indices" << std::endl;
-	} else if(m_drawMode == GL_TRIANGLES) {
+	} else if(m_drawMode == TRIANGLES) {
 		os << "element face " << m_indices.size() / faceSize << std::endl;
 		os << "property list uchar int vertex_indices" << std::endl;
 	}
@@ -517,7 +482,7 @@ void glmMesh::save(std::string _path, bool _useBinary ) const{
 				os << (int) faceSize << " " << m_indices[i] << " " << m_indices[i+1] << " " << m_indices[i+2] << std::endl;
 			}
 		}
-	} else if(m_drawMode == GL_TRIANGLES) {
+	} else if(m_drawMode == TRIANGLES) {
 		for(int i = 0; i < m_vertices.size(); i += faceSize) {
 			int indices[] = {i, i + 1, i + 2};
 			if(_useBinary) {

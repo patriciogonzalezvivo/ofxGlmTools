@@ -12,31 +12,31 @@
 #include <iostream>
 #include <sstream>
 
-std::string toString(const int &_int){
+inline std::string toString(const int &_int){
     std::ostringstream strStream;
     strStream<<_int;
     return strStream.str();
 }
 
-std::string toString(const float &_float){
+inline std::string toString(const float &_float){
     std::ostringstream strStream;
     strStream<<_float;
     return strStream.str();
 }
 
-std::string toString(const double &_double){
+inline std::string toString(const double &_double){
     std::ostringstream strStream;
     strStream<<_double;
     return strStream.str();
 }
 
-std::string toString(const char &_char){
+inline std::string toString(const char &_char){
     std::stringstream strStream;
     strStream<<_char;
     return strStream.str();
 }
 
-void stringPurifier ( std::string& s ){
+inline void stringPurifier ( std::string& s ){
     for ( std::string::iterator it = s.begin(), itEnd = s.end(); it!=itEnd; ++it){
         if ( static_cast<unsigned int>(*it) < 32 || static_cast<unsigned int>(*it) > 127 ){
             (*it) = ' ';

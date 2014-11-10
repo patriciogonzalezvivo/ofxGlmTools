@@ -33,7 +33,19 @@ ofMesh toOf(const glmMesh &_mesh){
         mesh.addIndex(toOf(it));
     }
     
-    mesh.setMode(ofGetOFPrimitiveMode(_mesh.getDrawMode()));
+    DrawMode drawMode = _mesh.getDrawMode();
+    
+    if(drawMode == POINTS){
+        mesh.setMode(OF_PRIMITIVE_POINTS);
+    } else if(drawMode == LINES){
+        mesh.setMode(OF_PRIMITIVE_LINES);
+    } else if(drawMode == LINE_STRIP){
+        mesh.setMode(OF_PRIMITIVE_LINE_STRIP);
+    } else if(drawMode == TRIANGLES){
+        mesh.setMode(OF_PRIMITIVE_TRIANGLES);
+    } else if(drawMode == TRIANGLE_STRIP){
+        mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+    }
     
     return mesh;
 }
@@ -61,7 +73,20 @@ glmMesh toGlm(const ofMesh &_mesh){
         mesh.addIndex(toGlm(it));
     }
     
-    mesh.setDrawMode(ofGetGLPrimitiveMode(_mesh.getMode()));
+    GLenum drawMode = ofGetGLPrimitiveMode(_mesh.getMode());
+    if (drawMode == GL_POINTS) {
+        mesh.setDrawMode(POINTS);
+    } else if (drawMode == GL_LINES){
+        mesh.setDrawMode(LINES);
+    } else if (drawMode == GL_LINE_STRIP){
+        mesh.setDrawMode(LINE_STRIP);
+    } else if (drawMode == GL_TRIANGLES){
+        mesh.setDrawMode(TRIANGLES);
+    } else if (drawMode == GL_TRIANGLE_STRIP){
+        mesh.setDrawMode(TRIANGLE_STRIP);
+    }
+    
+    
     
     return mesh;
 }
