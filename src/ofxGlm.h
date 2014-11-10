@@ -10,66 +10,59 @@
 
 #include "ofMain.h"
 
-static ofFloatColor toOf(const glm::vec4 &_v){
-    return ofFloatColor(_v.x,_v.y,_v.z,_v.w);
-}
+#include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
 
-static ofVec3f toOf(const glm::vec3 &_v){
-    return ofVec3f(_v.x,_v.y,_v.z);
-}
-
-static ofVec2f toOf(const glm::vec2 &_v){
-    return ofVec2f(_v.x,_v.y);
-}
-
-static ofIndexType toOf(const uint16_t &_i){
+inline ofIndexType toOf(const uint16_t &_i){
     return ofIndexType(_i);
 }
 
-static ofMesh toOf(const glmMesh &_mesh){
-    ofMesh mesh;
-    
-    for (auto &it : _mesh.getColors()) {
-        mesh.addColor(toOf(it));
-    }
-    
-    for (auto &it : _mesh.getVertices()) {
-        mesh.addVertex(toOf(it));
-    }
-    
-    for (auto &it : _mesh.getNormals()) {
-        mesh.addNormal(toOf(it));
-    }
-    
-    for (auto &it : _mesh.getTexCoords()) {
-        mesh.addTexCoord(toOf(it));
-    }
-    
-    for (auto &it : _mesh.getIndices()) {
-        mesh.addIndex(toOf(it));
-    }
-    
-    mesh.setMode(ofGetOFPrimitiveMode(_mesh.getDrawMode()));
-    
-    return mesh;
+inline uint16_t toGlm(const ofIndexType &_i){
+    return uint16_t(_i);
 }
 
-static glm::vec4 toGlm(const ofFloatColor &_v){
-    return glm::vec4(_v.r,_v.g,_v.b,_v.a);
+inline ofVec2f toOf(const glm::vec2 &_v){
+    return ofVec2f(_v.x,_v.y);
 }
 
-static glm::vec4 toGlm(const ofVec4f &_v){
-    return glm::vec4(_v.x,_v.y,_v.z,_v.w);
-}
-
-static glm::vec3 toGlm(const ofVec3f &_v){
-    return glm::vec3(_v.x,_v.y,_v.z);
-}
-
-static glm::vec2 toGlm(const ofVec2f &_v){
+inline glm::vec2 toGlm(const ofVec2f &_v){
     return glm::vec2(_v.x,_v.y);
 }
 
-static uint16_t toGlm(const ofIndexType &_i){
-    return uint16_t(_i);
+inline ofVec3f toOf(const glm::vec3 &_v){
+    return ofVec3f(_v.x,_v.y,_v.z);
+}
+
+inline glm::vec3 toGlm(const ofVec3f &_v){
+    return glm::vec3(_v.x,_v.y,_v.z);
+}
+
+inline ofFloatColor toOf(const glm::vec4 &_v){
+    return ofFloatColor(_v.x,_v.y,_v.z,_v.w);
+}
+
+inline glm::vec4 toGlm(const ofVec4f &_v){
+    return glm::vec4(_v.x,_v.y,_v.z,_v.w);
+}
+
+inline glm::vec4 toGlm(const ofFloatColor &_v){
+    return glm::vec4(_v.r,_v.g,_v.b,_v.a);
+}
+
+inline ofQuaternion toOf(const glm::quat &_q){
+    return ofQuaternion(_q[0],_q[1],_q[2],_q[3]);
+}
+
+inline glm::quat toGlm(const ofQuaternion &_q){
+    return glm::quat(_q.x(),_q.y(),_q.z(),_q.w());
+}
+
+inline ofMatrix4x4 toOf(const glm::mat4 &_m){
+    return ofMatrix4x4(&_m[0][0]);
+}
+
+//  NOT tested
+//
+inline glm::mat4 toGlm(const ofMatrix4x4 &_m){
+    return glm::mat4(1.0);
 }

@@ -7,6 +7,8 @@
 
 #include "glmRectangle.h"
 
+#include "glmGeom.h"
+
 glmRectangle::glmRectangle():x(0.0), y(0.0), width(0.0), height(0.0){
 
 }
@@ -217,34 +219,4 @@ void glmRectangle::growToInclude(const std::vector<glm::vec3> &_points){
     for(auto &it: _points){
         growToInclude(it);
     }
-}
-
-void glmRectangle::drawBorders(){
-    glm::vec3 linePoints[5] = {getTopLeft(), getTopRight(), getBottomRight(), getBottomLeft(), getTopLeft()};
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(2, GL_FLOAT, sizeof(glm::vec3), &linePoints[0].x);
-	glDrawArrays(GL_LINE_STRIP, 0, 5);
-}
-
-void glmRectangle::drawCorners(const float &_width){
-    glm::vec3 linePoints[16] = {getTopLeft(), getTopLeft(),getTopLeft(), getTopLeft(),
-                               getTopRight(), getTopRight(),getTopRight(), getTopRight(),
-                               getBottomRight(), getBottomRight(),getBottomRight(), getBottomRight(),
-                               getBottomLeft(), getBottomLeft(),getBottomLeft(), getBottomLeft() };
-    linePoints[0].x += _width;
-    linePoints[3].y += _width;
-    
-    linePoints[4].x -= _width;
-    linePoints[7].y += _width;
-    
-    linePoints[8].x -= _width;
-    linePoints[11].y -= _width;
-    
-    linePoints[12].x += _width;
-    linePoints[15].y -= _width;
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(2, GL_FLOAT, sizeof(glm::vec3), &linePoints[0].x);
-	glDrawArrays(GL_LINES, 0, 16);
 }

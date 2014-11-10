@@ -7,8 +7,16 @@
 
 #pragma once
 
-#include "glmTools.h"
+#include "glmGeom.h"
 #include "glmPolyline.h"
+
+enum DrawMode {
+    POINTS,
+    LINES,
+    LINE_STRIP,
+    TRIANGLES,
+    TRIANGLE_STRIP
+};
 
 class glmMesh {
 public:
@@ -21,7 +29,7 @@ public:
     
     virtual ~glmMesh();
     
-    void    setDrawMode(GLenum _drawMode);
+    void    setDrawMode(DrawMode _drawMode);
     
     void    setColor(const glm::vec4 &_color);
     void    addColor(const glm::vec4 &_color);
@@ -48,7 +56,7 @@ public:
     void    add(const std::vector<glmPolyline> &_polylines );       // Close Shape with holes
     void    add(const glmPolyline &_polyline, float _lineWidth);    // Lines
     
-    GLenum  getDrawMode() const;
+    DrawMode  getDrawMode() const;
     
     const std::vector<glm::vec4> & getColors() const;
     const std::vector<glm::vec3> & getVertices() const;
@@ -67,5 +75,5 @@ private:
     std::vector<glm::vec2>  m_texCoords;
     std::vector<uint16_t>   m_indices;
     
-    GLenum  m_drawMode;
+    DrawMode    m_drawMode;
 };

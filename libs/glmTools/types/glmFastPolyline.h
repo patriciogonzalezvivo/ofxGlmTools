@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "glmTools.h"
 #include "glmPolyline.h"
 #include "glmPolarPoint.h"
 
@@ -32,7 +31,6 @@ public:
     
     virtual void    simplify(float _tol);
     virtual void    updateCache();
-    virtual void    drawNormals();
     
 protected:
     std::vector<glmPolarPoint>  m_polars;
