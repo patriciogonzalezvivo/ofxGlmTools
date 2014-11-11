@@ -9,6 +9,24 @@
 
 #include <OpenGL/gl.h>
 
+std::vector<glm::vec3> project(const std::vector<glm::vec3> &_pts){
+    glm::ivec4 viewport;
+    glGetIntegerv(GL_VIEWPORT, &viewport[0]);
+    glm::mat4x4 mvmatrix, projmatrix;
+    glGetFloatv(GL_MODELVIEW_MATRIX, &mvmatrix[0][0]);
+    glGetFloatv(GL_PROJECTION_MATRIX, &projmatrix[0][0]);
+    
+    return project(_pts,viewport,mvmatrix,projmatrix);
+}
+
+std::vector<glm::vec3> project(const std::vector<glm::vec3> &_pts, const glm::ivec4 &_viewport,const glm::mat4x4 &_mvmatrix, const  glm::mat4x4 &_projmatrix){
+    std::vector<glm::vec3> rta;
+    for (int i = 0; i < _pts.size(); i++) {
+        rta.push_back(glm::project(_pts[i], _mvmatrix, _projmatrix, _viewport));
+    }
+    return rta;
+}
+
 void drawArrow(const glm::vec3 &_pos, const float &_angle, const float &_width ){
     glm::ivec3 linePoints[4] = {    glm::ivec3(_pos.x,_pos.y,_pos.z),
         glm::ivec3(_pos.x,_pos.y,_pos.z),

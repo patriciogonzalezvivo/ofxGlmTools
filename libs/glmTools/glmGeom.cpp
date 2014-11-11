@@ -56,16 +56,20 @@ bool lexicalComparison(const glm::vec3& v1, const glm::vec3& v2) {
 
 bool isRightTurn(const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) {
     // use the cross product to determin if we have a right turn
-    return ((b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x)) >= 0;
+    return ((b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x)) > 0;
 }
 
 glm::vec3 h1,h2,h3;
 
+std::vector<glm::vec3> getConvexHull(const std::vector<glm::vec3> &_pts){
+    std::vector<glm::vec3> pts;
+    pts.assign(_pts.begin(),_pts.end());
+    
+    return getConvexHull(pts);
+}
+
 std::vector<glm::vec3> getConvexHull(std::vector<glm::vec3> &pts){
     std::vector<glm::vec3> hull;
-    
-//    std::vector<glm::vec3> pts;
-//    pts.assign(_pts.begin(),_pts.end());
     
     if (pts.size() < 3) {
         std::cout << "Error: you need at least three points to calculate the convex hull" << std::endl;
@@ -110,9 +114,15 @@ std::vector<glm::vec3> getConvexHull(std::vector<glm::vec3> &pts){
             direction = direction * -1;
         }
         
-        currentPoint+= direction;
+        currentPoint+=direction;
         
-        if (hull.front()==hull.back()) break;
+        if (hull.front()==hull.back()) {
+            if(currentPoint == 3 && direction == 1){
+                currentPoint = 4;
+            } else {
+                break;
+            }
+        }
     }
     
     return hull;

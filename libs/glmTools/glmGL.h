@@ -11,6 +11,9 @@
 #include "glmPolyline.h"
 #include "glmMesh.h"
 
+std::vector<glm::vec3> project(const std::vector<glm::vec3> &_pts);
+std::vector<glm::vec3> project(const std::vector<glm::vec3> &_pts, const glm::ivec4 &_viewport,const glm::mat4x4 &_mvmatrix, const  glm::mat4x4 &_projmatrix);
+
 void drawCross(const glm::vec3 &_pos, const float &_width = 3.5);
 
 void drawArrow(const glm::vec3 &_pos, const float &_angle, const float &_width = 6.0);
@@ -22,7 +25,7 @@ void drawCorners(const glmRectangle &_rect, const float &_width = 4.);
 
 void drawPoints(const std::vector<glm::vec3> &_pts );
 void drawPolyline(const std::vector<glm::vec3> &_pts );
-void drawPolyline(const glmPolyline &_poly){drawPolyline(_poly.getVertices());}
+inline void drawPolyline(const glmPolyline &_poly){ drawPolyline( _poly.getVertices() ); }
 
 void drawMesh(const glmMesh &_mesh);
 

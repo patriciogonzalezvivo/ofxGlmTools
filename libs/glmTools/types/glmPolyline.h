@@ -23,7 +23,7 @@ public:
 	void    add(const glm::vec3* verts, int numverts);
     
     virtual glm::vec3 & operator [](const int &_index);
-    const glm::vec3 & operator [](const int &_index) const;
+    virtual const glm::vec3 & operator [](const int &_index) const;
     
     virtual glm::vec3   getCentroid();
     virtual const std::vector<glm::vec3> & getVertices() const;

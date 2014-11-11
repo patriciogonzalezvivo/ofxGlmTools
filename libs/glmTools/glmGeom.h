@@ -65,7 +65,8 @@ float mapValue(const float &value, const float &inputMin, const float &inputMax,
 float lerpValue(const float &_start, const float &_stop, float const &_amt);
 
 glm::vec3 getCentroid(const std::vector<glm::vec3> &_pts);
-std::vector<glm::vec3> getConvexHull( std::vector<glm::vec3> &_pts);
+std::vector<glm::vec3> getConvexHull(std::vector<glm::vec3> &_pts);
+std::vector<glm::vec3> getConvexHull(const std::vector<glm::vec3> &_pts);
 
 bool lineSegmentIntersection(const glm::vec3 &_line1Start, const glm::vec3 &_line1End,
                              const glm::vec3 &_line2Start, const glm::vec3 &_line2End,
