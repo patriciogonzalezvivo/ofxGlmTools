@@ -39,12 +39,28 @@ float lerpValue(const float &_start, const float &_stop, float const &_amt) {
     }
 }
 
+float getArea(const std::vector<glm::vec3> &_pts){
+    float area;
+    
+    for(int i=0;i<(int)_pts.size()-1;i++){
+        area += _pts[i].x * _pts[i+1].y - _pts[i+1].x * _pts[i].y;
+    }
+    area += _pts[_pts.size()-1].x * _pts[0].y - _pts[0].x * _pts[_pts.size()-1].y;
+    area *= 0.5;
+    
+    return area;
+}
+
 glm::vec3 getCentroid(const std::vector<glm::vec3> &_pts){
     glm::vec3 centroid;
     for (int i = 0; i < _pts.size(); i++) {
         centroid += _pts[i] / (float)_pts.size();
     }
     return centroid;
+}
+
+std::vector<glm::vec3> getSimplify(const std::vector<glm::vec3> &_pts){
+    
 }
 
 bool lexicalComparison(const glm::vec3& v1, const glm::vec3& v2) {
@@ -59,8 +75,6 @@ bool isRightTurn(const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) {
     return ((b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x)) > 0;
 }
 
-glm::vec3 h1,h2,h3;
-
 std::vector<glm::vec3> getConvexHull(const std::vector<glm::vec3> &_pts){
     std::vector<glm::vec3> pts;
     pts.assign(_pts.begin(),_pts.end());
@@ -70,6 +84,7 @@ std::vector<glm::vec3> getConvexHull(const std::vector<glm::vec3> &_pts){
 
 std::vector<glm::vec3> getConvexHull(std::vector<glm::vec3> &pts){
     std::vector<glm::vec3> hull;
+    glm::vec3 h1,h2,h3;
     
     if (pts.size() < 3) {
         std::cout << "Error: you need at least three points to calculate the convex hull" << std::endl;
@@ -159,435 +174,130 @@ bool lineSegmentIntersection(const glm::vec3 &_line1Start, const glm::vec3 &_lin
     return false;
 };
 
-//-------------------------------------------------------------------------------------
+//This is for polygon/contour simplification - we use it to reduce the number of m_points needed in
+//representing the letters as openGL shapes - will soon be moved to ofGraphics.cpp
 
-//  C++ implementation of Kabsch Algorithm ( http://en.wikipedia.org/wiki/Kabsch_algorithm )
-//  from http://boscoh.com/code/rmsd.c
-//  More resources http://nghiaho.com/?page_id=671
-//
+// From: http://softsurfer.com/Archive/algorithm_0205/algorithm_0205.htm
+// Copyright 2002, softSurfer (www.softsurfer.com)
+// This code may be freely used and modified for any purpose
+// providing that this copyright notice is included with it.
+// SoftSurfer makes no warranty for this code, and cannot be held
+// liable for any real or imagined damage resulting from its use.
+// Users of this code must verify correctness for their application.
 
-/*
- * setup_rotation()
- *
- *      given two lists of x,y,z coordinates, constructs
- * the correlation R matrix and the E value needed to calculate the
- * least-squares rotation matrix.
- */
-void setup_rotation(std::vector<glm::vec3> &_ref_xlist, std::vector<glm::vec3> &_mov_xlist, glm::vec3 &mov_com, glm::vec3 &mov_to_ref, glm::mat3 &R, double* E0){
+typedef struct{
+    glm::vec3 P0, P1;
+} Segment;
+
+#define norm2(v)   glm::dot(v,v)        // norm2 = squared length of vector
+#define norm(v)    sqrt(norm2(v))  // norm = length of vector
+#define d2(u,v)    norm2(u-v)      // distance squared = norm2 of difference
+#define d(u,v)     norm(u-v)       // distance = norm of difference
+
+//--------------------------------------------------
+static void simplifyDP(float tol, glm::vec3* v, int j, int k, int* mk ){
+    if (k <= j+1) // there is nothing to simplify
+        return;
     
-    int i, j, n;
-    glm::vec3 ref_com;
+    // check for adequate approximation by segment S from v[j] to v[k]
+    int     maxi	= j;          // index of vertex farthest from S
+    float   maxd2	= 0;         // distance squared of farthest vertex
+    float   tol2	= tol * tol;  // tolerance squared
+    Segment S		= {v[j], v[k]};  // segment from v[j] to v[k]
+    glm::vec3 u;
+    u				= S.P1 - S.P0;   // segment direction vector
+    float  cu		= glm::dot(u,u);     // segment length squared
     
-    /* calculate the centre of mass */
-    mov_com = glm::vec3(0.0);
-    ref_com = glm::vec3(0.0);
+    // test each vertex v[i] for max distance from S
+    // compute using the Feb 2001 Algorithm's dist_ofPoint_to_Segment()
+    // Note: this works in any dimension (2D, 3D, ...)
+    glm::vec3  w;
+    glm::vec3   Pb;                // base of perpendicular from v[i] to S
+    float  b, cw, dv2;        // dv2 = distance v[i] to S squared
     
-    for (n=0; n<_ref_xlist.size(); n++){
-        mov_com += _mov_xlist[n];
-        ref_com += _ref_xlist[n];
-    }
-    
-    mov_com /= _ref_xlist.size();
-    ref_com /= _ref_xlist.size();
-    mov_to_ref= ref_com - mov_com;
-    
-    /* shift mov_xlist and ref_xlist to centre of mass */
-    for (n=0; n<_ref_xlist.size(); n++){
-        _mov_xlist[n] -= mov_com;
-        _ref_xlist[n] -= ref_com;
-    }
-    
-    /* initialize */
-    R = glm::mat3(0.0);
-    *E0 = 0.0;
-    
-    for (n=0; n<_ref_xlist.size(); n++){
-        /*
-         * E0 = 1/2 * sum(over n): y(n)*y(n) + x(n)*x(n)
-         */
-        for (i=0; i<3; i++)
-            *E0 +=  _mov_xlist[n][i] * _mov_xlist[n][i]
-            + _ref_xlist[n][i] * _ref_xlist[n][i];
-        
-        /*
-         * correlation matrix R:
-         *   R[i,j) = sum(over n): y(n,i) * x(n,j)
-         *   where x(n) and y(n) are two vector sets
-         */
-        for (i=0; i<3; i++){
-            for (j=0; j<3; j++)
-                R[i][j] += _mov_xlist[n][i] * _ref_xlist[n][j];
+    for (int i=j+1; i<k; i++){
+        // compute distance squared
+        w = v[i] - S.P0;
+        cw = glm::dot(w,u);
+        if ( cw <= 0 ) dv2 = d2(v[i], S.P0);
+        else if ( cu <= cw ) dv2 = d2(v[i], S.P1);
+        else {
+            b = (float)(cw / cu);
+            Pb = S.P0 + u*b;
+            dv2 = d2(v[i], Pb);
         }
+        // test with current max distance squared
+        if (dv2 <= maxd2) continue;
+        
+        // v[i] is a new max vertex
+        maxi = i;
+        maxd2 = dv2;
     }
-    *E0 *= 0.5;
-}
-
-#define ROTATE(a,i,j,k,l) { g = a[i][j]; \
-h = a[k][l]; \
-a[i][j] = g-s*(h+g*tau); \
-a[k][l] = h+s*(g-h*tau); }
-/*
- * jacobi3
- *
- *    computes eigenval and eigen_vec of a real 3x3
- * symmetric matrix. On output, elements of a that are above
- * the diagonal are destroyed. d[1..3] returns the
- * eigenval of a. v[1..3][1..3] is a matrix whose
- * columns contain, on output, the normalized eigen_vec of
- * a. n_rot returns the number of Jacobi rotations that were required.
- */
-int jacobi3(glm::mat3 &a, glm::vec3 &d, glm::mat3 &v, int* n_rot){
-    
-    int count, k, i, j;
-    double tresh, theta, tau, t, sum, s, h, g, c;
-    glm::vec3 b, z;
-    
-    /*Initialize v to the identity matrix.*/
-    v = glm::mat3(1.0);
-    
-    /* Initialize b and d to the diagonal of a */
-    for (i=0; i<3; i++)
-        b[i] = d[i] = a[i][i];
-    
-    /* z will accumulate terms */
-    z = glm::vec3(0.0);
-    *n_rot = 0;
-    
-    /* 50 tries */
-    for (count=0; count<50; count++){
-        
-        /* sum off-diagonal elements */
-        sum = 0.0;
-        for (i=0; i<2; i++){
-            for (j=i+1; j<3; j++)
-                sum += fabs(a[i][j]);
-        }
-        
-        /* if converged to machine underflow */
-        if (sum == 0.0)
-            return(1);
-        
-        /* on 1st three sweeps... */
-        if (count < 3)
-            tresh = sum * 0.2 / 9.0;
-        else
-            tresh = 0.0;
-        
-        for (i=0; i<2; i++){
-            for (j=i+1; j<3; j++){
-                g = 100.0 * fabs(a[i][j]);
-                
-                /*  after four sweeps, skip the rotation if
-                 *   the off-diagonal element is small
-                 */
-                if ( count > 3  &&  fabs(d[i])+g == fabs(d[i]) &&  fabs(d[j])+g == fabs(d[j]) ){
-                    a[i][j] = 0.0;
-                } else if (fabs(a[i][j]) > tresh) {
-                    h = d[j] - d[i];
-                    
-                    if (fabs(h)+g == fabs(h)) {
-                        t = a[i][j] / h;
-                    } else {
-                        theta = 0.5 * h / (a[i][j]);
-                        t = 1.0 / ( fabs(theta) +
-                                   (double)sqrt(1.0 + theta*theta) );
-                        if (theta < 0.0)
-                            t = -t;
-                    }
-                    
-                    c = 1.0 / (double) sqrt(1 + t*t);
-                    s = t * c;
-                    tau = s / (1.0 + c);
-                    h = t * a[i][j];
-                    
-                    z[i] -= h;
-                    z[j] += h;
-                    d[i] -= h;
-                    d[j] += h;
-                    
-                    a[i][j] = 0.0;
-                    
-                    for (k=0; k<=i-1; k++)
-                        ROTATE(a, k, i, k, j)
-                        
-                        for (k=i+1; k<=j-1; k++)
-                            ROTATE(a, i, k, k, j)
-                            
-                            for (k=j+1; k<3; k++)
-                                ROTATE(a, i, k, j, k)
-                                
-                                for (k=0; k<3; k++)
-                                    ROTATE(v, k, i, k, j)
-                                    
-                                    ++(*n_rot);
-                }
-            }
-        }
-        
-        b += z;
-        d = b;
-        z = glm::vec3(0.0);
-        
-        //        for (i=0; i<3; i++){
-        //            b[i] += z[i];
-        //            d[i] = b[i];
-        //            z[i] = 0.0;
-        //        }
-    }
-    
-    printf("Too many iterations in jacobi3\n");
-    return (0);
-}
-
-
-
-/*
- * diagonalize_symmetric
- *
- *    Diagonalize a 3x3 matrix & sort eigenval by size
- */
-int diagonalize_symmetric(glm::mat3 &matrix, glm::mat3 &eigen_vec, glm::vec3 &eigenval){
-    int n_rot, i, j, k;
-    glm::mat3 vec;
-    double val;
-    
-    if (!jacobi3(matrix, eigenval, vec, &n_rot)){
-        printf("convergence failed\n");
-        return (0);
-    }
-    
-    /* sort solutions by eigenval */
-    for (i=0; i<3; i++){
-        k = i;
-        val = eigenval[i];
-        
-        for (j=i+1; j<3; j++)
-            if (eigenval[j] >= val){
-                k = j;
-                val = eigenval[k];
-            }
-        
-        if (k != i){
-            eigenval[k] = eigenval[i];
-            eigenval[i] = val;
-            for (j=0; j<3; j++){
-                val = vec[j][i];
-                vec[j][i] = vec[j][k];
-                vec[j][k] = val;
-            }
-        }
-    }
-    
-    /* transpose such that first index refers to solution index */
-    for (i=0; i<3; i++)
-        for (j=0; j<3; j++)
-            eigen_vec[i][j] = vec[j][i];
-    
-    return (1);
-}
-
-
-
-/*
- * calculate_rotation_matrix()
- *
- *   calculates the rotation matrix U and the
- * rmsd from the R matrix and E0:
- */
-
-int calculate_rotation_matrix(glm::mat3 &R, glm::mat3 &U, double E0, double* residual){
-    int i, j, k;
-    glm::mat3 Rt, RtR;
-    glm::mat3 left_eigenvec, right_eigenvec;
-    glm::vec3 eigenval;
-    glm::vec3 v;
-    double sigma;
-    
-    /* build Rt, transpose of R  */
-    for (i=0; i<3; i++)
-        for (j=0; j<3; j++)
-            Rt[i][j] = R[j][i];
-    
-    /* make symmetric RtR = Rt X R */
-    for (i=0; i<3; i++)
-        for (j=0; j<3; j++){
-            RtR[i][j] = 0.0;
-            for (k = 0; k<3; k++)
-                RtR[i][j] += Rt[k][i] * R[j][k];
-        }
-    
-    if (!diagonalize_symmetric(RtR, right_eigenvec, eigenval))
-        return(0);
-    
-    /* right_eigenvec's should be an orthogonal system but could be left
-     * or right-handed. Let's force into right-handed system.
-     */
-    //    cross(&right_eigenvec[2][0], &right_eigenvec[0][0], &right_eigenvec[1][0]);
-    right_eigenvec[2] = glm::cross(right_eigenvec[0], right_eigenvec[1]);
-    
-    /* From the Kabsch algorithm, the eigenvec's of RtR
-     * are identical to the right_eigenvec's of R.
-     * This means that left_eigenvec = R x right_eigenvec
-     */
-    for (i=0; i<3; i++)
-        for (j=0; j<3; j++)
-            left_eigenvec[i][j] = glm::dot(right_eigenvec[i], Rt[j]);
-    
-    for (i=0; i<3; i++)
-        glm::normalize( left_eigenvec[i] );
-    
-    /*
-     * Force left_eigenvec[2] to be orthogonal to the other vectors.
-     * First check if the rotational matrices generated from the
-     * orthogonal eigenvectors are in a right-handed or left-handed
-     * co-ordinate system - given by sigma. Sigma is needed to
-     * resolve this ambiguity in calculating the RMSD.
-     */
-    v = glm::cross(left_eigenvec[0], left_eigenvec[1]);
-    if (glm::dot(v, left_eigenvec[2]) < 0.0)
-        sigma = -1.0;
-    else
-        sigma = 1.0;
-    
-    //    for (i=0; i<3; i++)
-    //        left_eigenvec[2][i] = v[i];
-    
-    left_eigenvec[2] = v;
-    
-    /* calc optimal rotation matrix U that minimises residual */
-    for (i=0;i<3; i++)
-        for (j=0; j<3; j++){
-            U[i][j] = 0.0;
-            for (k=0; k<3; k++)
-                U[i][j] += left_eigenvec[k][i] * right_eigenvec[k][j];
-        }
-    
-    *residual = E0 - (double) sqrt(fabs(eigenval[0])) - (double) sqrt(fabs(eigenval[1])) - sigma * (double) sqrt(fabs(eigenval[2]));
-    
-    return (1);
-}
-
-
-
-void calculate_rotation_rmsd(std::vector<glm::vec3> &_ref_xlist, std::vector<glm::vec3> &_mov_xlist, glm::vec3 &mov_com, glm::vec3 &mov_to_ref, glm::mat3 &U, double* rmsd){
-    double Eo, residual;
-    glm::mat3 R;
-    
-    setup_rotation(_ref_xlist, _mov_xlist, mov_com, mov_to_ref, R, &Eo);
-    
-    calculate_rotation_matrix(R, U, Eo, &residual);
-    
-    residual = fabs(residual); /* avoids the awkward case of -0.0 */
-    *rmsd = sqrt( fabs((double) (residual)*2.0/((double)_ref_xlist.size())) );
-}
-
-
-
-/*
- * Fast calculation of rmsd w/o calculating a rotation matrix.
- *
- *   Chris Saunders 11/2002 - Fast rmsd calculation by the method of
- * Kabsch 1978, where the required eigenvalues are found by an
- * analytical, rather than iterative, method to save time.
- * The cubic factorization used to accomplish this only produces
- * stable eigenvalues for the transpose(R]*R matrix of a typical
- * protein after the whole matrix has been normalized. Note that
- * the normalization process used here is completely empirical
- * and that, at the present time, there are **no checks** or
- * warnings on the quality of the (potentially unstable) cubic
- * factorization.
- *
- */
-#define PI 3.14159265358979323846
-void fast_rmsd(std::vector<glm::vec3> _ref_xlist, std::vector<glm::vec3> _mov_xlist, double* rmsd){
-    glm::mat3 R;
-    double d0,d1,d2,e0,e1,f0;
-    double omega;
-    glm::vec3 mov_com;
-    glm::vec3 mov_to_ref;
-    
-    /* cubic roots */
-    double r1,r2,r3;
-    double rlow;
-    
-    glm::vec3 v;
-    double Eo, residual;
-    
-    setup_rotation(_ref_xlist, _mov_xlist, mov_com, mov_to_ref, R, &Eo);
-    
-    /*
-     * check if the determinant is greater than 0 to
-     * see if R produces a right-handed or left-handed
-     * co-ordinate system.
-     */
-    v = glm::cross(R[1], R[2]);
-    if (glm::dot(R[0], v) > 0.0)
-        omega = 1.0;
-    else
-        omega = -1.0;
-    
-    /*
-     * get elements we need from tran(R) x R
-     *  (funky matrix naming relic of first attempt using pivots)
-     *          matrix = d0 e0 f0
-     *                      d1 e1
-     *                         d2
-     * divide matrix by d0, so that cubic root algorithm can handle it
-     */
-    
-    d0 =  R[0][0]*R[0][0] + R[1][0]*R[1][0] + R[2][0]*R[2][0];
-    
-    d1 = (R[0][1]*R[0][1] + R[1][1]*R[1][1] + R[2][1]*R[2][1])/d0;
-    d2 = (R[0][2]*R[0][2] + R[1][2]*R[1][2] + R[2][2]*R[2][2])/d0;
-    
-    e0 = (R[0][0]*R[0][1] + R[1][0]*R[1][1] + R[2][0]*R[2][1])/d0;
-    e1 = (R[0][1]*R[0][2] + R[1][1]*R[1][2] + R[2][1]*R[2][2])/d0;
-    
-    f0 = (R[0][0]*R[0][2] + R[1][0]*R[1][2] + R[2][0]*R[2][2])/d0;
-    
-    /* cubic roots */
+    if (maxd2 > tol2)        // error is worse than the tolerance
     {
-        double B, C, D, q, q3, r, theta;
-        /*
-         * solving for eigenvalues as det(A-I*lambda) = 0
-         * yeilds the values below corresponding to:
-         * lambda**3 + B*lambda**2 + C*lambda + D = 0
-         *   (given that d0=1.)
-         */
-        B = -1.0 - d1 - d2;
-        C = d1 + d2 + d1*d2 - e0*e0 - f0*f0 - e1*e1;
-        D = e0*e0*d2 + e1*e1 + f0*f0*d1 - d1*d2 - 2*e0*f0*e1;
+        // split the polyline at the farthest vertex from S
+        mk[maxi] = 1;      // mark v[maxi] for the simplified polyline
+        // recursively simplify the two subpolylines at v[maxi]
+        simplifyDP( tol, v, j, maxi, mk );  // polyline v[j] to v[maxi]
+        simplifyDP( tol, v, maxi, k, mk );  // polyline v[maxi] to v[k]
+    }
+    // else the approximation is OK, so ignore intermediate vertices
+    return;
+}
+
+std::vector<glm::vec3> getSimplify(std::vector<glm::vec3> &_pts, float _tolerance){
+    std::vector<glm::vec3> rta;
+    rta.assign(_pts.begin(),_pts.end());
+    simplify(rta);
+    return rta;
+}
+
+void simplify(std::vector<glm::vec3> &_pts, float _tolerance){
+    
+    if(_pts.size() < 2) return;
+    
+    int n = _pts.size();
+    
+    if(n == 0) {
+        return;
+    }
+    
+    std::vector<glm::vec3> sV;
+    sV.resize(n);
+    
+    int    i, k, m, pv;            // misc counters
+    float  tol2 = _tolerance * _tolerance;       // tolerance squared
+    std::vector<glm::vec3> vt;
+    std::vector<int> mk;
+    vt.resize(n);
+    mk.resize(n,0);
+    
+    
+    // STAGE 1.  Vertex Reduction within tolerance of prior vertex cluster
+    vt[0] = _pts[0];              // start at the beginning
+    for (i=k=1, pv=0; i<n; i++) {
+        if (d2(_pts[i], _pts[pv]) < tol2) continue;
         
-        /* cubic root method of Viete with all safety belts off */
-        q = (B*B - 3.0*C) / 9.0;
-        q3 = q*q*q;
-        r = (2.0*B*B*B - 9.0*B*C + 27.0*D) / 54.0;
-        theta = acos(r/sqrt(q3));
-        r1 = r2 = r3 = -2.0*sqrt(q);
-        r1 *= cos(theta/3.0);
-        r2 *= cos((theta + 2.0*PI) / 3.0);
-        r3 *= cos((theta - 2.0*PI) / 3.0);
-        r1 -= B / 3.0;
-        r2 -= B / 3.0;
-        r3 -= B / 3.0;
+        vt[k++] = _pts[i];
+        pv = i;
+    }
+    if (pv < n-1) vt[k++] = _pts[n-1];      // finish at the end
+    
+    // STAGE 2.  Douglas-Peucker polyline simplification
+    mk[0] = mk[k-1] = 1;       // mark the first and last vertices
+    simplifyDP( _tolerance, &vt[0], 0, k-1, &mk[0] );
+    
+    // copy marked vertices to the output simplified polyline
+    for (i=m=0; i<k; i++) {
+        if (mk[i]) sV[m++] = vt[i];
     }
     
-    /* undo the d0 norm to get eigenvalues */
-    r1 = r1*d0;
-    r2 = r2*d0;
-    r3 = r3*d0;
-    
-    /* set rlow to lowest eigenval; set other two to r1,r2 */
-    if (r3<r1 && r3<r2){
-        rlow = r3;
-    } else if (r2<r1 && r2<r3) {
-        rlow = r2;
-        r2 = r3;
-    } else {
-        rlow = r1;
-        r1 = r3;
+    //get rid of the unused points
+    if( m < (int)sV.size() ){
+        _pts.assign( sV.begin(),sV.begin()+m );
+    }else{
+        _pts = sV;
     }
     
-    residual = Eo - sqrt(r1) - sqrt(r2) - omega*sqrt(rlow);
-    *rmsd = sqrt( (double) residual*2.0 / ((double) _ref_xlist.size()) );
+    
 }

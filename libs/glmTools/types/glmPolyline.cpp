@@ -50,6 +50,7 @@ glmPolyline::glmPolyline(const glmRectangle &_rect, float _radiants){
 }
 
 glmPolyline::~glmPolyline(){
+    m_points.clear();
 }
 
 int glmPolyline::size() const {
@@ -116,7 +117,7 @@ static void simplifyDP(float tol, glm::vec3* v, int j, int k, int* mk ){
     float   tol2	= tol * tol;  // tolerance squared
     Segment S		= {v[j], v[k]};  // segment from v[j] to v[k]
     glm::vec3 u;
-	u				= S.P1 - S.P0;   // segment direction vector
+    u				= S.P1 - S.P0;   // segment direction vector
     float  cu		= glm::dot(u,u);     // segment length squared
     
     // test each vertex v[i] for max distance from S
@@ -157,50 +158,7 @@ static void simplifyDP(float tol, glm::vec3* v, int j, int k, int* mk ){
 }
 
 void glmPolyline::simplify(float _tolerance){
-    if(m_points.size() < 2) return;
-    
-	int n = size();
-	
-	if(n == 0) {
-		return;
-	}
-    
-    std::vector<glm::vec3> sV;
-	sV.resize(n);
-    
-    int    i, k, m, pv;            // misc counters
-    float  tol2 = _tolerance * _tolerance;       // tolerance squared
-    std::vector<glm::vec3> vt;
-    std::vector<int> mk;
-    vt.resize(n);
-	mk.resize(n,0);
-    
-    
-    // STAGE 1.  Vertex Reduction within tolerance of prior vertex cluster
-    vt[0] = m_points[0];              // start at the beginning
-    for (i=k=1, pv=0; i<n; i++) {
-        if (d2(m_points[i], m_points[pv]) < tol2) continue;
-        
-        vt[k++] = m_points[i];
-        pv = i;
-    }
-    if (pv < n-1) vt[k++] = m_points[n-1];      // finish at the end
-    
-    // STAGE 2.  Douglas-Peucker polyline simplification
-    mk[0] = mk[k-1] = 1;       // mark the first and last vertices
-    simplifyDP( _tolerance, &vt[0], 0, k-1, &mk[0] );
-    
-    // copy marked vertices to the output simplified polyline
-    for (i=m=0; i<k; i++) {
-        if (mk[i]) sV[m++] = vt[i];
-    }
-    
-	//get rid of the unused m_points
-	if( m < (int)sV.size() ){
-		m_points.assign( sV.begin(),sV.begin()+m );
-	}else{
-		m_points = sV;
-	}
+    ::simplify(m_points,_tolerance);
 }
 
 const std::vector<glm::vec3> & glmPolyline::getVertices() const{
@@ -226,13 +184,14 @@ glmRectangle glmPolyline::getBoundingBox() const {
 
 glm::vec3 glmPolyline::getCentroid() {
     if(m_bChange){
-        m_centroid = glm::vec3(0.0,0.0,0.0);
-        for (int i = 0; i < m_points.size(); i++) {
-            m_centroid += m_points[i] / (float)m_points.size();
-        }
+        m_centroid = ::getCentroid(m_points);
         m_bChange = false;
     }
     return m_centroid;
+}
+
+float glmPolyline::getArea(){
+    return ::getArea(m_points);
 }
 
 std::vector<glmPolyline> glmPolyline::splitAt(float _dist){

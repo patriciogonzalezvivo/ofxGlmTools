@@ -64,7 +64,12 @@ void wrapRad(double &_angle);
 float mapValue(const float &value, const float &inputMin, const float &inputMax, const float &outputMin, const float &outputMax, bool clamp = true);
 float lerpValue(const float &_start, const float &_stop, float const &_amt);
 
-glm::vec3 getCentroid(const std::vector<glm::vec3> &_pts);
+float       getArea(const std::vector<glm::vec3> &_pts);
+glm::vec3   getCentroid(const std::vector<glm::vec3> &_pts);
+
+void simplify(std::vector<glm::vec3> &_pts, float _tolerance=0.3f);
+std::vector<glm::vec3> getSimplify(const std::vector<glm::vec3> &_pts, float _tolerance=0.3f);
+
 std::vector<glm::vec3> getConvexHull(std::vector<glm::vec3> &_pts);
 std::vector<glm::vec3> getConvexHull(const std::vector<glm::vec3> &_pts);
 

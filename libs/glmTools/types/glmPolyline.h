@@ -25,6 +25,7 @@ public:
     virtual glm::vec3 & operator [](const int &_index);
     virtual const glm::vec3 & operator [](const int &_index) const;
     
+    virtual float       getArea();
     virtual glm::vec3   getCentroid();
     virtual const std::vector<glm::vec3> & getVertices() const;
     virtual glm::vec3   getPositionAt(const float &_dist) const;
