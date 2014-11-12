@@ -60,9 +60,13 @@
 
 const glm::vec3 UP_NORMAL = glm::vec3(0.0f, 0.0f, 1.0f);
 
+int     signValue(float _n);
 void    wrapRad(double &_angle);
 float   mapValue(const float &value, const float &inputMin, const float &inputMax, const float &outputMin, const float &outputMax, bool clamp = true);
 float   lerpValue(const float &_start, const float &_stop, float const &_amt);
+
+void        scale(glm::vec3 &_vec, float _length);
+glm::vec3   getScaled(const glm::vec3 &_vec, float _length);
 
 float       getArea(const std::vector<glm::vec3> &_pts);
 glm::vec3   getCentroid(const std::vector<glm::vec3> &_pts);
@@ -72,7 +76,3 @@ std::vector<glm::vec3> getSimplify(const std::vector<glm::vec3> &_pts, float _to
 
 std::vector<glm::vec3> getConvexHull(std::vector<glm::vec3> &_pts);
 std::vector<glm::vec3> getConvexHull(const std::vector<glm::vec3> &_pts);
-
-bool lineSegmentIntersection(const glm::vec3 &_line1Start, const glm::vec3 &_line1End,
-                             const glm::vec3 &_line2Start, const glm::vec3 &_line2End,
-                             glm::vec3 &_intersection );

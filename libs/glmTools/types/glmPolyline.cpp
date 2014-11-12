@@ -9,6 +9,7 @@
 
 #include "glmPolarPoint.h"
 #include "glmGeom.h"
+#include "glmIntersection.h"
 
 glmPolyline::glmPolyline():m_centroid(0.0,0.0,0.0),m_bChange(true){
     m_points.clear();
@@ -229,7 +230,7 @@ std::vector<glmPolyline> glmPolyline::splitAtIntersection(const glmPolyline &_ot
             for (int j = 0; j < _other.size()-1; j++){
                 
                 glm::vec3 intersection;
-                if(lineSegmentIntersection(m_points[i],m_points[i+1],
+                if(LineSegmentIntersection(m_points[i],m_points[i+1],
                                            _other[j],_other[j+1],
                                            intersection)){
                     

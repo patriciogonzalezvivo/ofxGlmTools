@@ -7,6 +7,12 @@
 
 #include "glmGeom.h"
 
+int signValue(float _n) {
+    if( _n > 0 ) return 1;
+    else if(_n < 0) return -1;
+    else return 0;
+}
+
 void wrapRad(double &_angle){
     if (_angle < -PI) _angle += PI*2.;
     if (_angle > PI) _angle -= PI*2.;
@@ -37,6 +43,23 @@ float lerpValue(const float &_start, const float &_stop, float const &_amt) {
     } else {
         return _stop;
     }
+}
+
+void scale(glm::vec3 _vec, const float _length ) {
+    float l = (float)sqrt(_vec.x*_vec.x + _vec.y*_vec.y + _vec.z*_vec.z);
+    if (l > 0) {
+        _vec.x = (_vec.x/l)*_length;
+        _vec.y = (_vec.y/l)*_length;
+        _vec.z = (_vec.z/l)*_length;
+    }
+}
+
+glm::vec3 getScaled(const glm::vec3 &_vec, float _length) {
+    float l = (float)sqrt(_vec.x*_vec.x + _vec.y*_vec.y + _vec.z*_vec.z);
+    if( l > 0 )
+        return glm::vec3( (_vec.x/l)*_length, (_vec.y/l)*_length, (_vec.z/l)*_length );
+    else
+        return glm::vec3();
 }
 
 float getArea(const std::vector<glm::vec3> &_pts){
@@ -142,37 +165,6 @@ std::vector<glm::vec3> getConvexHull(std::vector<glm::vec3> &pts){
     
     return hull;
 }
-
-bool lineSegmentIntersection(const glm::vec3 &_line1Start, const glm::vec3 &_line1End,
-                             const glm::vec3 &_line2Start, const glm::vec3 &_line2End,
-                             glm::vec3 &_intersection ){
-    glm::vec3 diffLA, diffLB;
-    double compareA, compareB;
-    diffLA = _line1End - _line1Start;
-    diffLB = _line2End - _line2Start;
-    compareA = diffLA.x*_line1Start.y - diffLA.y*_line1Start.x;
-    compareB = diffLB.x*_line2Start.y - diffLB.y*_line2Start.x;
-    if (
-        (
-         ( ( diffLA.x*_line2Start.y - diffLA.y*_line2Start.x ) < compareA ) ^
-         ( ( diffLA.x*_line2End.y - diffLA.y*_line2End.x ) < compareA )
-         )
-        &&
-        (
-         ( ( diffLB.x*_line1Start.y - diffLB.y*_line1Start.x ) < compareB ) ^
-         ( ( diffLB.x*_line1End.y - diffLB.y*_line1End.x) < compareB )
-         )
-        )
-    {
-        double lDetDivInv = 1 / ((diffLA.x*diffLB.y) - (diffLA.y*diffLB.x));
-        _intersection.x =  -((diffLA.x*compareB) - (compareA*diffLB.x)) * lDetDivInv ;
-        _intersection.y =  -((diffLA.y*compareB) - (compareA*diffLB.y)) * lDetDivInv ;
-        
-        return true;
-    }
-    
-    return false;
-};
 
 //This is for polygon/contour simplification - we use it to reduce the number of m_points needed in
 //representing the letters as openGL shapes - will soon be moved to ofGraphics.cpp

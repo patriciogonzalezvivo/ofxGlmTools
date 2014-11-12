@@ -8,6 +8,7 @@
 #include "glmRectangle.h"
 
 #include "glmGeom.h"
+#include "glmIntersection.h"
 
 glmRectangle::glmRectangle():x(0.0), y(0.0), width(0.0), height(0.0){
 
@@ -165,10 +166,10 @@ bool glmRectangle::intersects(const glm::vec3& p0, const glm::vec3& p1) const {
     
     return inside(p0) || // check end inside
     inside(p1) || // check end inside
-    lineSegmentIntersection(p0, p1, topLeft,     topRight,    p) || // cross top
-    lineSegmentIntersection(p0, p1, topRight,    bottomRight, p) || // cross right
-    lineSegmentIntersection(p0, p1, bottomRight, bottomLeft,  p) || // cross bottom
-    lineSegmentIntersection(p0, p1, bottomLeft,  topLeft,     p);   // cross left
+    LineSegmentIntersection(p0, p1, topLeft,     topRight,    p) || // cross top
+    LineSegmentIntersection(p0, p1, topRight,    bottomRight, p) || // cross right
+    LineSegmentIntersection(p0, p1, bottomRight, bottomLeft,  p) || // cross bottom
+    LineSegmentIntersection(p0, p1, bottomLeft,  topLeft,     p);   // cross left
 }
 
 bool glmRectangle::clip( glm::vec3& _p0, glm::vec3& _p1) const {
@@ -180,26 +181,26 @@ bool glmRectangle::clip( glm::vec3& _p0, glm::vec3& _p1) const {
     
     if (!inside(_p0)) {
         glm::vec3 r;
-        if (lineSegmentIntersection(_p0, _p1, topLeft,     topRight,    r)){
+        if (LineSegmentIntersection(_p0, _p1, topLeft,     topRight,    r)){
             _p0 = r;
-        } else if (lineSegmentIntersection(_p0, _p1, topRight,    bottomRight, r)){
+        } else if (LineSegmentIntersection(_p0, _p1, topRight,    bottomRight, r)){
             _p0 = r;
-        } else if (lineSegmentIntersection(_p0, _p1, bottomRight, bottomLeft,  r)){
+        } else if (LineSegmentIntersection(_p0, _p1, bottomRight, bottomLeft,  r)){
             _p0 = r;
-        } else if (lineSegmentIntersection(_p0, _p1, bottomLeft,  topLeft,     r)){
+        } else if (LineSegmentIntersection(_p0, _p1, bottomLeft,  topLeft,     r)){
             _p0 = r;
         }
     }
     
     if (!inside(_p1)) {
         glm::vec3 r;
-        if (lineSegmentIntersection(_p1, _p0, topLeft,     topRight,    r)){
+        if (LineSegmentIntersection(_p1, _p0, topLeft,     topRight,    r)){
             _p1 = r;
-        } else if (lineSegmentIntersection(_p1, _p0, topRight,    bottomRight, r)){
+        } else if (LineSegmentIntersection(_p1, _p0, topRight,    bottomRight, r)){
             _p1 = r;
-        } else if (lineSegmentIntersection(_p1, _p0, bottomRight, bottomLeft,  r)){
+        } else if (LineSegmentIntersection(_p1, _p0, bottomRight, bottomLeft,  r)){
             _p1 = r;
-        } else if (lineSegmentIntersection(_p1, _p0, bottomLeft,  topLeft,     r)){
+        } else if (LineSegmentIntersection(_p1, _p0, bottomLeft,  topLeft,     r)){
             _p1 = r;
         }
     }

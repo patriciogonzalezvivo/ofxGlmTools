@@ -27,6 +27,21 @@ std::vector<glm::vec3> project(const std::vector<glm::vec3> &_pts, const glm::iv
     return rta;
 }
 
+void drawCross(const glm::vec3 &_pos, const float &_width ){
+    glm::ivec3 linePoints[4] = {glm::ivec3(_pos.x,_pos.y,_pos.z),
+        glm::ivec3(_pos.x,_pos.y,_pos.z),
+        glm::ivec3(_pos.x,_pos.y,_pos.z),
+        glm::ivec3(_pos.x,_pos.y,_pos.z) };
+    linePoints[0].x -= _width;
+    linePoints[1].x += _width;
+    linePoints[2].y -= _width;
+    linePoints[3].y += _width;
+    
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_INT, sizeof(glm::ivec3), &linePoints[0].x);
+    glDrawArrays(GL_LINES, 0, 4);
+}
+
 void drawArrow(const glm::vec3 &_pos, const float &_angle, const float &_width ){
     glm::ivec3 linePoints[4] = {    glm::ivec3(_pos.x,_pos.y,_pos.z),
         glm::ivec3(_pos.x,_pos.y,_pos.z),
@@ -38,21 +53,6 @@ void drawArrow(const glm::vec3 &_pos, const float &_angle, const float &_width )
     
     linePoints[3].x += (int)_width*cos(_angle-M_PI_4*3.);
     linePoints[3].y += (int)_width*sin(_angle-M_PI_4*3.);
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_INT, sizeof(glm::ivec3), &linePoints[0].x);
-    glDrawArrays(GL_LINES, 0, 4);
-}
-
-void drawCross(const glm::vec3 &_pos, const float &_width ){
-    glm::ivec3 linePoints[4] = {glm::ivec3(_pos.x,_pos.y,_pos.z),
-        glm::ivec3(_pos.x,_pos.y,_pos.z),
-        glm::ivec3(_pos.x,_pos.y,_pos.z),
-        glm::ivec3(_pos.x,_pos.y,_pos.z) };
-    linePoints[0].x -= _width;
-    linePoints[1].x += _width;
-    linePoints[2].y -= _width;
-    linePoints[3].y += _width;
     
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_INT, sizeof(glm::ivec3), &linePoints[0].x);
@@ -81,6 +81,27 @@ void drawStippleLine(const glm::vec3 &_a, const glm::vec3 &_b, const unsigned sh
     glDrawArrays(GL_LINES, 0, 2);
     glDisable(GL_LINE_STIPPLE);
 };
+
+void drawPlane( const glmPlane &_plane ){
+    //  TODO
+    //
+}
+
+void drawTriangle( const glmTriangle &_tri ){
+    glm::vec3 A = _tri.getP0();
+    glm::vec3 B = _tri.getP1();
+    glm::vec3 C = _tri.getP2();
+    glm::vec3 normal = _tri.getNormal();
+    
+    glBegin(GL_TRIANGLES);
+    glNormal3fv(&normal.x);
+    glVertex3fv(&A.x);
+    glNormal3fv(&normal.x);
+    glVertex3fv(&B.x);
+    glNormal3fv(&normal.x);
+    glVertex3fv(&C.x);
+    glEnd();
+}
 
 void drawBorders( const glmRectangle &_rect ){
     glm::vec3 linePoints[5] = {_rect.getTopLeft(), _rect.getTopRight(), _rect.getBottomRight(), _rect.getBottomLeft(), _rect.getTopLeft()};
