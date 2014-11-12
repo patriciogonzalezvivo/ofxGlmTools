@@ -60,9 +60,9 @@
 
 const glm::vec3 UP_NORMAL = glm::vec3(0.0f, 0.0f, 1.0f);
 
-void wrapRad(double &_angle);
-float mapValue(const float &value, const float &inputMin, const float &inputMax, const float &outputMin, const float &outputMax, bool clamp = true);
-float lerpValue(const float &_start, const float &_stop, float const &_amt);
+void    wrapRad(double &_angle);
+float   mapValue(const float &value, const float &inputMin, const float &inputMax, const float &outputMin, const float &outputMax, bool clamp = true);
+float   lerpValue(const float &_start, const float &_stop, float const &_amt);
 
 float       getArea(const std::vector<glm::vec3> &_pts);
 glm::vec3   getCentroid(const std::vector<glm::vec3> &_pts);
