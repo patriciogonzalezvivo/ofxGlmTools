@@ -206,19 +206,15 @@ void glmMesh::computeNormals(){
             norm[ i3 ] += dir;
         }
         
-        //Normalize the normal's length
-        for (int i=0; i<nV; i++) {
-            norm[i] = glm::normalize(norm[i]);
-        }
-        
-        //Set the normals to mesh
+        //Normalize the normal's length and add it.
         m_normals.clear();
-        addNormals(norm);
+        for (int i=0; i<nV; i++) {
+            addNormal( glm::normalize(norm[i]) );
+        }
         
     } else if ( getDrawMode() == TRIANGLE_STRIP){
         //  TODO
         //
         std::cout << "ERROR: glmMesh only add GL_TRIANGLES for NOW !!" << std::endl;
     }
-    
 }

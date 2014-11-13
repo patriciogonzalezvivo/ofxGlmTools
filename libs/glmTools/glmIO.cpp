@@ -239,6 +239,7 @@ bool loadPLY(glmMesh &_mesh, const std::string &_path){
         if(normals.size()>0){
             _mesh.addNormals(normals);
         } else {
+            std::cout << "Computing normals" << std::endl;
             _mesh.computeNormals();
         }
         

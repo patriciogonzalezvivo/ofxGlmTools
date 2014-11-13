@@ -261,7 +261,7 @@ void extrude(glmMesh &_mesh, const glmPolyline &_polyline, float _min, float _ma
         glm::vec3 ip1 = glm::vec3(_polyline[i+1].x,_polyline[i+1].y,0);
         
         tan = ip1 - ip0;
-        nor = glm::cross(UP_NORMAL, tan);
+        nor = glm::cross(-UP_NORMAL, tan);
         nor = nor;
         
         _mesh.addTexCoord(glm::vec2(1.,0.));
