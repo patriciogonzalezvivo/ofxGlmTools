@@ -40,6 +40,7 @@ void drawPolyline(const std::vector<glm::vec3> &_pts );
 inline void drawPolyline(const glmPolyline &_poly){ drawPolyline( _poly.getVertices() ); }
 
 void drawMesh(const glmMesh &_mesh);
+void drawWireMesh(const glmMesh &_mesh);
 
 inline void draw(const glm::vec3 &_a){drawCross(_a);}
 inline void draw(const glmRay &_ray){drawRay(_ray);}

@@ -82,14 +82,10 @@ glm::vec3 getCentroid(const std::vector<glm::vec3> &_pts){
     return centroid;
 }
 
-std::vector<glm::vec3> getSimplify(const std::vector<glm::vec3> &_pts){
-    
-}
-
-bool lexicalComparison(const glm::vec3& v1, const glm::vec3& v2) {
-    if (v1.x > v2.x) return true;
-    else if (v1.x < v2.x) return false;
-    else if (v1.y > v2.y) return true;
+bool lexicalComparison(const glm::vec3 &_v1, const glm::vec3 &_v2) {
+    if (_v1.x > _v2.x) return true;
+    else if (_v1.x < _v2.x) return false;
+    else if (_v1.y > _v2.y) return true;
     else return false;
 }
 
@@ -290,6 +286,4 @@ void simplify(std::vector<glm::vec3> &_pts, float _tolerance){
     }else{
         _pts = sV;
     }
-    
-    
 }

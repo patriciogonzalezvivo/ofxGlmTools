@@ -283,7 +283,5 @@ bool glmPolyline::isInside(float _x, float _y){
 //  http://geomalgorithms.com/a12-_hull-3.html
 //
 glmPolyline glmPolyline::get2DConvexHull(){
-    glmPolyline rta;
-    rta.add(getConvexHull(m_points));
-    return rta;
+    return glmPolyline( getConvexHull(m_points) );
 }

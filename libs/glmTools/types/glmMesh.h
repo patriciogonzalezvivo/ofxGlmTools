@@ -23,9 +23,6 @@ public:
     
     glmMesh();
     glmMesh(const glmMesh &_mother);
-    glmMesh(const glmPolyline &_poly);
-    glmMesh(const std::vector<glmPolyline> &_polylines);
-    glmMesh(const glmPolyline &_line, float _lineWidth);
     
     virtual ~glmMesh();
     
@@ -52,19 +49,17 @@ public:
     void    addTriangle(uint16_t index1, uint16_t index2, uint16_t index3);
     
     void    add(const glmMesh &_mesh);
-    void    add(const glmPolyline &_polyline);                      // Close Shape
-    void    add(const std::vector<glmPolyline> &_polylines );       // Close Shape with holes
-    void    add(const glmPolyline &_polyline, float _lineWidth);    // Lines
     
     DrawMode  getDrawMode() const;
+    std::vector<glm::ivec3>  getTriangles() const ;
     
     const std::vector<glm::vec4> & getColors() const;
     const std::vector<glm::vec3> & getVertices() const;
     const std::vector<glm::vec3> & getNormals() const;
     const std::vector<glm::vec2> & getTexCoords() const;
     const std::vector<uint16_t>  & getIndices() const;
-    
-    void    save(std::string _path, bool useBinary = false) const;
+
+    void    computeNormals();
     void    clear();
     
 private:

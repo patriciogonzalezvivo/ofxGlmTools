@@ -197,3 +197,32 @@ void drawMesh(const glmMesh &_mesh){
         glDisableClientState(GL_NORMAL_ARRAY);
     }
 }
+
+void drawWireMesh(const glmMesh &_mesh){
+    
+    glBegin(GL_LINES);
+    
+    if (_mesh.getDrawMode() == TRIANGLES) {
+        std::vector<glm::ivec3> triangles = _mesh.getTriangles();
+        
+        for (int i = 0; i < triangles.size(); i++) {
+            
+            //  TODO: add normals and texcoords
+            //
+            
+            glVertex3fv( &_mesh.getVertices()[triangles[i].x].x );
+            glVertex3fv( &_mesh.getVertices()[triangles[i].y].x );
+            
+            glVertex3fv( &_mesh.getVertices()[triangles[i].y].x );
+            glVertex3fv( &_mesh.getVertices()[triangles[i].z].x );
+            
+            glVertex3fv( &_mesh.getVertices()[triangles[i].z].x );
+            glVertex3fv( &_mesh.getVertices()[triangles[i].x].x );
+        }
+    } else {
+        drawMesh(_mesh);
+    }
+
+    glEnd();
+}
+
