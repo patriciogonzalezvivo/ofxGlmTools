@@ -236,10 +236,9 @@ bool loadPLY(glmMesh &_mesh, const std::string &_path){
         _mesh.addTexCoords(texcoord);
         _mesh.addIndices(indices);
         
-        if(normals.size()>0){
+        if(normals.size()>0 && ( _mesh.getDrawMode() == TRIANGLES || _mesh.getDrawMode() == TRIANGLE_STRIP)){
             _mesh.addNormals(normals);
         } else {
-            std::cout << "Computing normals" << std::endl;
             _mesh.computeNormals();
         }
         

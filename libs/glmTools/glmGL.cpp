@@ -170,7 +170,7 @@ void drawMesh(const glmMesh &_mesh){
     GLenum drawMode = GL_TRIANGLES;
     
     if (_mesh.getDrawMode() == POINTS) {
-        drawMode = GL_POINT;
+        drawMode = GL_POINTS;
     } else if (_mesh.getDrawMode() == LINES) {
         drawMode = GL_LINES;
     } else if (_mesh.getDrawMode() == LINE_STRIP) {
@@ -209,7 +209,6 @@ void drawWireMesh(const glmMesh &_mesh){
             
             //  TODO: add normals and texcoords
             //
-            
             glVertex3fv( &_mesh.getVertices()[triangles[i].x].x );
             glVertex3fv( &_mesh.getVertices()[triangles[i].y].x );
             

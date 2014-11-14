@@ -25,8 +25,8 @@ glmFastPolyline::glmFastPolyline(const std::vector<glm::vec3> &_points){
     }
 }
 
-glmFastPolyline::~glmFastPolyline(){
-};
+//glmFastPolyline::~glmFastPolyline(){
+//};
 
 void glmFastPolyline::clear(){
     glmPolyline::clear();

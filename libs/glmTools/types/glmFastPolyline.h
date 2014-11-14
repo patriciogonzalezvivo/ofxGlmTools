@@ -16,7 +16,7 @@ public:
     glmFastPolyline();
     glmFastPolyline(const glmPolyline &_poly);
     glmFastPolyline(const std::vector<glm::vec3> &_points);
-    virtual ~glmFastPolyline();
+//    virtual ~glmFastPolyline();
     
     virtual void add(const glm::vec3 &_point);
     virtual void clear();

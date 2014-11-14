@@ -50,9 +50,9 @@ glmPolyline::glmPolyline(const glmRectangle &_rect, float _radiants){
     }
 }
 
-glmPolyline::~glmPolyline(){
-    m_points.clear();
-}
+//glmPolyline::~glmPolyline(){
+//    m_points.clear();
+//}
 
 int glmPolyline::size() const {
     return m_points.size();
